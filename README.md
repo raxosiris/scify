@@ -15,8 +15,8 @@ Biomedical and [scientific literature datasets](https://allenai.org/data/s2orc) 
 After `git clone`, go inside the project `root` directory, do this:
 
 
-```bash
-//create conda env (I named it scimine)
+```shell
+//create conda env (I named it scify)
 conda env create -f environment.yml
 
 //install libraries
