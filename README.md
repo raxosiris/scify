@@ -26,7 +26,7 @@ pip3 install -r requirements.txt
 pip3 install -r model_downloads.txt
 
 //download datasets
-python scripts/downloader.py
+python scify/scripts/downloader.py
 //if there's an error then go to scripts/dataset_urls.py and download with the url from your browser
 ```
 
@@ -41,11 +41,17 @@ from
 
 
 
-
+PubMed XML dumps: Be careful. The XMLs are often not correctly formatted and can't be imported. 
 
 
 
 `Hint`: Often Jupyter saves spaCy models locally in /var/folders/vl/
+
+
+
+## ENTITY LINKING
+
+`UMLS` is huge and takes long to load even when cached
 
 
 

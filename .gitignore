@@ -9,7 +9,7 @@ __pycache__/
 data
 data/*
 
-
+.vscode
 # Distribution / packaging
 .Python
 build/
