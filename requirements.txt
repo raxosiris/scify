@@ -1,0 +1,13 @@
+scispacy
+networkx
+requests
+tqdm
+DframCy
+kindred
+funcy
+Pillow
+more-itertools
+visualise-spacy-pattern
+pprint
+
+git+git://github.com/titipata/pubmed_parser.git

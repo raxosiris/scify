@@ -1,0 +1,16 @@
+name: scify
+channels:
+- conda-forge
+- defaults
+dependencies:
+- jupyter
+- jupyterlab
+- python>=3.8
+- pip 
+- spacy
+- networkx
+- pytest
+- ipytest
+- tabulate
+- black
+- nodejs

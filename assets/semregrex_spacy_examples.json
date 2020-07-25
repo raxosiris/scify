@@ -1,0 +1,41 @@
+[
+    [
+    {"SPEC": {"NODE_NAME": "prevented"}, "PATTERN": {"ORTH": "prevented"}},
+    {"SPEC": {"NODE_NAME": "start_entity", "NBOR_RELOP": ">", "NBOR_NAME": "prevented"}, "PATTERN": {"DEP": "nsubj"}},
+    {"SPEC": {"NODE_NAME": "release", "NBOR_RELOP": ">", "NBOR_NAME": "prevented"}, "PATTERN": {"DEP": "dobj", "ORTH":"release"}},
+    {"SPEC": {"NODE_NAME": "end_entity", "NBOR_RELOP": ">", "NBOR_NAME": "release"}, "PATTERN": {"DEP": "nmod"}},
+    ],
+    [
+    {
+        "SPEC": {
+          "NODE_NAME": "node1"
+        },
+        "PATTERN": {
+          "DEP": "ROOT",
+          "TAG": "VBP"
+        }
+      },
+      {
+        "SPEC": {
+          "NODE_NAME": "node0",
+          "NBOR_NAME": "node1",
+          "NBOR_RELOP": ">"
+        },
+        "PATTERN": {
+          "DEP": "nsubj",
+          "TAG": "PRP"
+        }
+      },
+      {
+        "SPEC": {
+          "NODE_NAME": "node3",
+          "NBOR_NAME": "node1",
+          "NBOR_RELOP": ">"
+        },
+        "PATTERN": {
+          "DEP": "dobj",
+          "TAG": "NNS"
+        }
+      }
+    ]
+]
