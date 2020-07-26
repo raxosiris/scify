@@ -90,10 +90,40 @@ def merge_named_entities(docA, docB, merge_from_model:str, model_kb_name:str):
     old_entities, new_entities = get_entity_diff(docA, ents_info)
     #print(type(new_entities[0]), new_entities[0]._.kb_ents)
     if (len(new_entities)):
-        new_entities[0].set_extension(merge_from_model, default={}, force=True)
+        #if(getattr(new_entities[0], "_." + "model_labels")
+        new_entities[0].set_extension("annotated", default=[], force=True)
+        #new_entities[0].set_extension(merge_from_model, default={}, force=True)
+
         for idx, named_ent in enumerate(new_entities):
             kb_ents = ents_info[idx]["kb_ents"]
-            rsetattr(named_ent, "_." + merge_from_model, {model_kb_name: kb_ents})
+            print("kb_ents", kb_ents)
+            
+            infos = rgetattr(named_ent, "_." + "annotated")
+            
+            #EVERY entity gets an info object
+            info = {
+                "idx": idx,
+                "kb_ents":  kb_ents,
+                 "label" : named_ent.label_,
+                 "model" : model_kb_name,
+                 "end_char": named_ent.end_char,
+                 "start_char": named_ent.start_char,
+            }
+            infos.append(info)
+            """
+            
+            
+            info
+            info[]
+            info["label"] = named_ent.label_
+            info["end_char"] = named_ent.end_char
+            info["start_char"] = named_ent.start_char
+            """
+
+            rsetattr(named_ent, "_." + merge_from_model, info)
+            #rsetattr(named_ent, "_." + "labels." + merge_from_model, named_ent.label_)
+            #rsetattr(named_ent, "_." + "labels"), {model_kb_name: kb_ents})
+
     
     #TODO: sets --> check who overwrites whom (only if entities named) --> especially after first model
     #aka filter(has_label, old_entities).intersect(new_entities)
@@ -157,6 +187,8 @@ def pattern_vis(pattern: List[dict]):
     img=mpimg.imread(png)
     imgplot = plt.imshow(img,vmin=600)
     plt.show()"""
+
+    
 
 
 def prep_pattern(pattern:str) -> List[List[str]]: 

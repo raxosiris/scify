@@ -34,6 +34,8 @@ def download_ftp(url, target, ext="xml"):
             with open(filename.split(".")[0] + "." + ext, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 print("Unzipped File: " + filename)
+       
+       
         """ with closing(request.urlopen(url)) as r:
         with open(filename, 'wb') as f:
             shutil.copyfileobj(r, f)
@@ -73,6 +75,7 @@ def download(url, target="data/", buffer_size=1024):
             f.write(data)
             # update the progress bar manually
             progress.update(len(data))
+      s
 
     # get the file name
 
