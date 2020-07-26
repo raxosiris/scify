@@ -23,7 +23,7 @@ conda env create -f environment.yml
 pip3 install -r requirements.txt
 
 //download models (spacy, scispacy and so on)
-pip3 install -r model_downloads.txt
+pip3 install -r download_models.txt
 
 //download datasets
 python scify/scripts/downloader.py
