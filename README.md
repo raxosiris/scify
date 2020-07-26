@@ -16,18 +16,21 @@ After `git clone`, go inside the project `root` directory, do this:
 
 
 ```shell
-//create conda env (I named it scify)
+// create conda env (I named it scify)
 conda env create -f environment.yml
 
-//install libraries
+// install libraries
 pip3 install -r requirements.txt
 
-//download models (spacy, scispacy and so on)
+// download models (spacy, scispacy and so on)
 pip3 install -r download_models.txt
 
-//download datasets
+// download datasets
 python scify/scripts/downloader.py
 //if there's an error then go to scripts/dataset_urls.py and download with the url from your browser
+
+// install scify kernel for jupyter
+ipython kernel install --user --name=scify
 ```
 
 ~~`Attention!` The pubmed xml samples you have to download [here]([ftp://ftp.ncbi.nlm.nih.gov/pubmed/baseline-2018-sample/](ftp://ftp.ncbi.nlm.nih.gov/pubmed/baseline-2018-sample/)) because the request lib in `downloader.py` doesn't handle `FTP`. [TODO]~~ *Nevermind just fixed it...*
