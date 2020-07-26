@@ -19,6 +19,9 @@ After `git clone`, go inside the project `root` directory, do this:
 // create conda env (I named it scify)
 conda env create -f environment.yml
 
+// activate conda env
+conda activate scify
+
 // install libraries
 pip3 install -r requirements.txt
 
