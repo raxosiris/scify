@@ -18,11 +18,10 @@ import matplotlib.image as mpimg
 from operator import itemgetter
 from spacy.tokens import Span, Token, Doc
 import functools
+from typeguard import typechecked
+
 #tip: Use Code Folding
 
-def get_ontology_name(linker: EntityLinker)-> str: #assumes a lot on consistent naming in scispacy 
-    "GeneOntology or UMLS or MESH"
-    return str(linker.kb).split(".")[2].split(" ")[0]
 
 def add_pipes_mutative(nlps, linker):
     """add pipeline components to every nlp pipeline """
@@ -33,6 +32,10 @@ def add_pipes_mutative(nlps, linker):
         nlp.add_pipe(linker)
     return nlps
 
+@typechecked
+def get_ont_name(linker: EntityLinker)-> str: #assumes a lot on consistent naming in scispacy 
+    "GeneOntology or UMLS or MESH"
+    return str(linker.kb).split(".")[2].split(" ")[0]
 
 def rsetattr(obj, attr, val):
     """setting nested attributes"""
@@ -54,8 +57,9 @@ def rgetattr(obj, path: str, *default):
         if default:
             return default[0]
         raise
-        
-def get_entity_diff(doc:Doc, new_ents_info:dict ): #candidates= [{start, end, label_, label}]
+
+@typechecked    
+def get_entity_diff(doc:Doc, new_ents_info:List[dict] ): #candidates= [{start, end, label_, label}]
     """Looks if there is an  entity match at the exact same position of another document (with another pipeline) 
     . If yes, the new overrides the old. How to merge docs, if it is at all a good idea is a mystery to me
     """
@@ -69,20 +73,24 @@ def get_entity_diff(doc:Doc, new_ents_info:dict ): #candidates= [{start, end, la
     #    span = Span(doc, start, end, label=match_id)
     #    doc.ents = list(doc.ents) + [span]
         # check for end - 1 here because boundaries are inclusive
-        if start not in seen_tokens and end - 1 not in seen_tokens:
-            entity = Span(doc, start, end, label=label)
-            new_entities.append(entity)
-            
-            #compare by token idx
-            old_entities = [ e for e in old_entities if not (e.start < end and e.end > start)]
-            
-            #compare by char_offset (should have same results)
-            #old_entities = [ e for e in old_entities if not (e.start_char < end_char and e.end_char > start_char)]
+        try:
+            if start not in seen_tokens and end - 1 not in seen_tokens:
+                entity = Span(doc, start, end, label=label)
+                new_entities.append(entity)
+                
+                #compare by token idx
+                old_entities = [ e for e in old_entities if not (e.start < end and e.end > start)]
+                
+                #compare by char_offset (should have same results)
+                #old_entities = [ e for e in old_entities if not (e.start_char < end_char and e.end_char > start_char)]
 
-            seen_tokens.update(range(start, end))        
+                seen_tokens.update(range(start, end))
+        except TypeError:
+                "mehhh token index is off -- have to do this func on the char_level"
     return old_entities, new_entities
 
-def merge_named_entities(docA, docB, merge_from_model:str, model_kb_name:str):
+@typechecked
+def merge_named_entities(docA:Doc, docB:Doc, merge_from_model:str, model_kb_name:str):
     """Merges two docs and places the kb_ents as extension with the ontology and model name.
        So if two entities merge, the old entities can still be found on the object (EXCEPT! Base_doc ...because it is not NER just ER)
     """
@@ -96,7 +104,7 @@ def merge_named_entities(docA, docB, merge_from_model:str, model_kb_name:str):
 
         for idx, named_ent in enumerate(new_entities):
             kb_ents = ents_info[idx]["kb_ents"]
-            print("kb_ents", kb_ents)
+            #print("kb_ents", kb_ents)
             
             infos = rgetattr(named_ent, "_." + "annotated")
             
@@ -120,7 +128,7 @@ def merge_named_entities(docA, docB, merge_from_model:str, model_kb_name:str):
             info["start_char"] = named_ent.start_char
             """
 
-            rsetattr(named_ent, "_." + merge_from_model, info)
+            rsetattr(named_ent, "_." + "annotated", infos)
             #rsetattr(named_ent, "_." + "labels." + merge_from_model, named_ent.label_)
             #rsetattr(named_ent, "_." + "labels"), {model_kb_name: kb_ents})
 
@@ -129,15 +137,56 @@ def merge_named_entities(docA, docB, merge_from_model:str, model_kb_name:str):
     #aka filter(has_label, old_entities).intersect(new_entities)
     return tuple(old_entities) + tuple(new_entities) #merged_doc
 
+def print_table(rows, padding=0):
+    """ Print `rows` with content-based column widths. """
+    col_widths = [
+        max(len(str(value)) for value in col) + padding
+        for col in zip(*rows)
+    ]
+    total_width = sum(col_widths) + len(col_widths) - 1
+    fmt = ' '.join('%%-%ds' % width for width in col_widths)
+    print(fmt % tuple(rows[0]))
+    print('~' * total_width)
+    for row in rows[1:]:
+        print(fmt % tuple(row))
+
+def show_noun_chunks(doc:Doc):    
+    rows = [['Chunk', '.root', 'root.dep_', '.root.head']]
+    for chunk in doc.noun_chunks:
+        rows.append([
+            chunk,            # A Span object with the full phrase.
+            chunk.root,       # The key Token within this phrase.
+            chunk.root.dep_,  # The grammatical role of this phrase.
+            chunk.root.head   # The grammatical parent Token.
+        ])
+    print_table(rows, padding=4)
+
+@typechecked
+
+def doc_has_entity_labels(doc, ent_labels:List[List[str]]):
+    """Checks if a pair of entities (two lists of aliases) show up in a document. For sentence level checks: .... maybe something else"""
+    for idx, ent in enumerate(doc.ents):
+        doc_labels = [annotation["label"] 
+                      for ent in doc.ents 
+                      for annotation in ent._.annotated]
+        return any([label in doc_labels for label in ent_labels[0]]) and any([label in doc_labels for label in ent_labels[1]])
+    return False
+
+@typechecked
 def get_merged_docs_for_texts(texts: List[str], base_nlp, NER_nlps:List) -> List[Doc]:
     print("Merging Named Entities (Chems, Gene, Organism etc.). Later docs in the pipeline overwrite entities from earlier ones")
-    docs = []    
-    for text in texts:
+    docs = []
+    span_overflow_errors = []  
+    for idx, text in enumerate(texts):
         doc = base_nlp(text)
         for nlp in NER_nlps: #later nlps overwrite entities of earlier ones 
-            next_doc = nlp(text)
-            doc.ents = merge_named_entities(doc, next_doc , nlp.meta["name"], "umls")
+            try:
+                next_doc = nlp(text)
+                doc.ents = merge_named_entities(doc, next_doc , nlp.meta["name"], "umls")
+            except IndexError:
+                span_overflow_errors.append("index : " + str(idx) + " --- error for doc: " +  text[:10] )
         docs.append(doc)
+    [print(errormsg) for errormsg in span_overflow_errors]
     return docs
 
 def get_tokenidx_for_char(doc, char_idx):
@@ -326,6 +375,9 @@ def construct_pattern(rules: List[List[str]], lemmatize=True):
     # in the dependency subtree. Whilst we do this, we check that there is
     # a single node which has only outgoing edges.
 
+    if (type(rules) is str):
+            rules = prep_pattern(rules)
+            
     if "dep" in {rule[1] for rule in rules}:
         return None
 
