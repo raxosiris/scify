@@ -4,6 +4,16 @@ from typing import List, Tuple, Union
 from spacy.tokens import Token, Doc, Span
 import networkx as nx
 
+
+def graph_vis_doc(doc, vis=True)-> nx.Graph:
+    G = nx.Graph(get_edges(doc))
+    if vis:
+        nx.nx_agraph.write_dot(G,'test.dot')
+        pos=graphviz_layout(G, prog='dot')
+        nx.draw(G, pos, with_labels=True, arrows=True)
+    return G
+
+
 #doc = nlp(u'Convulsions that occur after DTaP are caused by a fever, and fever may cause headache.')
 def get_sdp_path(doc, subj:int, obj:int):
     """
