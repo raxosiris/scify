@@ -4,6 +4,38 @@ from typing import List, Tuple, Union
 from spacy.tokens import Token, Doc, Span
 import networkx as nx
 
+#doc = nlp(u'Convulsions that occur after DTaP are caused by a fever, and fever may cause headache.')
+def get_sdp_path(doc, subj:int, obj:int):
+    """
+    'Convulsions that occur after DTaP are caused by a fever, and fever may cause headache.'
+       ----> [Convulsions, caused, by, fever]
+
+    Get shortest dependency path without networkx lib. Usues spacy's LCA (lowest common ancestor) matrix
+    Adapted from:https://towardsdatascience.com/find-lowest-common-ancestor-subtree-and-shortest-dependency-path-with-spacy-only-32da4d107d7a
+    """
+    
+    lca = doc.get_lca_matrix()[subj, obj]
+
+    current_node = doc[subj]
+    subj_path = [current_node]
+    if lca != -1: 
+        if lca != subj: 
+            while current_node.head.i != lca:
+                current_node = current_node.head
+                subj_path.append(current_node)
+            subj_path.append(current_node.head)
+    
+    current_node = doc[obj]
+    obj_path = [current_node]
+    if lca != -1: 
+        if lca != obj: 
+            while current_node.head.i != lca:
+                current_node = current_node.head
+                obj_path.append(current_node)
+        obj_path.append(current_node.head)
+
+    return subj_path + obj_path[::-1][1:]
+
 # Load spacy's dependency tree into a networkx graph
 def get_edges(doc: Union[Doc, List[Span]]):
     """Use get_edges_unique if you want object +id"""
