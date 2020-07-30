@@ -6,11 +6,25 @@ import networkx as nx
 
 # Load spacy's dependency tree into a networkx graph
 def get_edges(doc: Union[Doc, List[Span]]):
+    """Use get_edges_unique if you want object +id"""
     edges = []
 
     for token in doc:
         for child in token.children:
             edges.append((token, child))
+    return edges
+
+def get_edges_unique(doc: Union[Doc, List[Span]]):
+    """"""
+    edges = []
+
+    for token in doc:
+        for child in token.children:
+            #if you want text instead of actual object!
+            #edges.append(('{0}-{1}'.format(token.text, token.i),
+            #'{0}-{1}'.format(child.text, child.i)))
+
+            edges.append(((token, token.i), (child, child.i)))
     return edges
 
 def get_verb(tokens: List[Token]):
