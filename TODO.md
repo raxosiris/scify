@@ -21,6 +21,7 @@
 
 [ ] Performance of merge_docs is horrid and not really by concept sensitivity (overwrite ranking)
 
+[ ] Understand how to have a REBL, REPL or DATA VIEW in Python....
 #TODO
 #token -> char overlap in merge_docs
 #document level matching %

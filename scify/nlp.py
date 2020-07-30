@@ -23,6 +23,39 @@ from typeguard import typechecked
 #tip: Use Code Folding
 
 
+#this might make trouble since it's a list of spans without the .DOC API methods?
+
+def last_token_of_entity(doc:Doc, token:Token)->Token:
+    """RECURSIVE. Given a token in an entity, it recurses to the right until it finds a token where the IOB is not Inside (I)"""
+    """ HMGB1-induced -> induced"""
+    next_token = token.nbor()
+    is_end = next_token.ent_iob != 1
+    if is_end:
+        return token
+    else:
+        return last_token_of_entity(doc, next_token)
+
+def get_token_and_entities_as_spans(doc:Doc)-> List[Span]:
+    """
+    Possibly merge_entities does this but...
+    Helpful if you need a list of token and entities together. Tokens that are part of an entity are merged
+    Takes a Doc and gives you an iterable that doc.ents or doc[..] can't. It groups token by entity and maintains orginal doc order"""
+    spans = []
+    idx = 0
+    while idx < len(doc):
+        print(idx, type(idx))
+        token = doc[idx]
+        if token.ent_iob == 3: #beginning of entity
+            end_token = last_token_of_entity(doc, token)
+            print(token,end_token)
+            spans.append(doc[token.i : end_token.i + 1])
+            idx = end_token.i + 1 #don't have an endless while loop
+        else:
+            idx = idx + 1
+            spans.append(doc[token.i])
+    return spans
+
+
 def add_pipes_mutative(nlps, linker):
     """add pipeline components to every nlp pipeline """
     for nlp in nlps: #mutative
