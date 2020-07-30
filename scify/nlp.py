@@ -173,7 +173,7 @@ def doc_has_entity_labels(doc, ent_labels:List[List[str]]):
     return False
 
 @typechecked
-def get_merged_docs_for_texts(texts: List[str], base_nlp, NER_nlps:List) -> List[Doc]:
+def get_merged_docs_for_texts(texts: List[str], base_nlp, NER_nlps:List, print_every_nth: 25) -> List[Doc]:
     print("Merging Named Entities (Chems, Gene, Organism etc.). Later docs in the pipeline overwrite entities from earlier ones")
     docs = []
     span_overflow_errors = []  
@@ -186,7 +186,10 @@ def get_merged_docs_for_texts(texts: List[str], base_nlp, NER_nlps:List) -> List
             except IndexError:
                 span_overflow_errors.append("index : " + str(idx) + " --- error for doc: " +  text[:10] )
         docs.append(doc)
+        if (len(docs) % print_every_nth ==0 ): 
+            print("processed " + len(docs))
     [print(errormsg) for errormsg in span_overflow_errors]
+    
     return docs
 
 def get_tokenidx_for_char(doc, char_idx):

@@ -1,11 +1,11 @@
 from itertools import combinations, permutations
 from functools import reduce
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from spacy.tokens import Token, Doc, Span
 import networkx as nx
 
 # Load spacy's dependency tree into a networkx graph
-def get_edges(doc):
+def get_edges(doc: Union[Doc, List[Span]]):
     edges = []
 
     for token in doc:
@@ -20,7 +20,8 @@ def get_verb(tokens: List[Token]):
     
 #TODO either make a dict or read context off of tokens later
 def triples_from_pairs(pairs: List[Tuple[Doc, Doc]], G, doc:Doc, relation_fn=get_verb):
-    """takes two entities and finds a relation between them (relation_fn) looking at the shortest path"""
+    """takes two entities and finds a relation between them (relation_fn) looking at the 
+    shortest path. Edit: Too simple. Instead of assuming it's the verb, lookup in the dependency patterns (GNBR)"""
     triples = []      
     for pair in pairs:
         i1, i2 = pair

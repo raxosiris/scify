@@ -18,3 +18,26 @@
 [ ] look at source code for kindred, scipacy, role_pattern_nlp and adapt utils
 
 [ ] EDA on corpus level stats and word-trees
+
+[ ] Performance of merge_docs is horrid and not really by concept sensitivity (overwrite ranking)
+
+#TODO
+#token -> char overlap in merge_docs
+#document level matching %
+#sentence level matching %
+#performance?
+
+#get_shortest_path between ents
+#find pattern matches
+#dependency pattern + pattern matcher on GNBR --> relation extraction precision?
+TODO
+1) isEntity in Sentence?
+2) Shortest Path -> SP
+3) compare with theme in GNBR
+
+## Advanced (Later)
+
+#try
+  #as_doc() on a Span object (https://spacy.io/api/span#as_doc):
+
+[ ] Implement custom spacy pipelines and knowledge linking/ knowledge bases https://stackoverflow.com/questions/51412095/spacy-save-custom-pipeline

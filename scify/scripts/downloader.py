@@ -75,7 +75,6 @@ def download(url, target="data/", buffer_size=1024):
             f.write(data)
             # update the progress bar manually
             progress.update(len(data))
-      s
 
     # get the file name
 
