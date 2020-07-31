@@ -3,7 +3,7 @@ from functools import reduce
 from typing import List, Tuple, Union
 from spacy.tokens import Token, Doc, Span
 import networkx as nx
-
+from NLTK import Tree
 
 def graph_vis_doc(doc, vis=True)-> nx.Graph:
     G = nx.Graph(get_edges(doc))
@@ -107,3 +107,19 @@ def pair_down(all_pairs):
         dist = dist + [value]
 
     return [pair for idx, pair in enumerate(all_pairs) if dist[idx] != False]
+
+
+def tok_format(tok):
+    return "_".join([tok.orth_, tok.tag_, tok.dep_])
+
+
+def to_nltk_tree(node):
+    if node.n_lefts + node.n_rights > 0:
+        return Tree(tok_format(node), [to_nltk_tree(child) for child in node.children])
+    else:
+        return tok_format(node)
+
+
+#command = "Submit debug logs to project lead today at 9:00 AM"
+#en_doc = en_nlp(u'' + command) 
+#[to_nltk_tree(sent.root).pretty_print() for sent in en_doc.sents]
