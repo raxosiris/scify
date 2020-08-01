@@ -1,4 +1,5 @@
 #taken from https://stephantul.github.io/trees/2019/07/10/treerec/
+# some simple functions to deal with parse trees represented as lists of lists
 import numpy as np
 
 def recursive_compose(tree, embeddings, emb_size):

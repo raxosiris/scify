@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf8
 from __future__ import unicode_literals, print_function
 
 import plac
@@ -6,6 +8,7 @@ import spacy
 
 @plac.annotations(model=("Model to load", "positional", None, str))
 def main(model="en_core_web_sm"):
+    """Navigating the parse tree"""
     nlp = spacy.load(model)
     print("Loaded model '%s'" % model)
 

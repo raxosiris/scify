@@ -45,6 +45,8 @@
           ]
         }
       };
+      const tj ={"text": "Where is my wallet?", "root": "{'word': 'is', 'nodeType': 'ROOT', 'attributes': ['AUX'], 'link': 'ROOT', 'spans': [{'start': 6, 'end': 8}], 'children': [{'word': 'Where', 'nodeType': 'advmod', 'attributes': ['ADV'], 'link': 'advmod', 'spans': [{'start': 0, 'end': 5}]}, {'word': 'wallet', 'nodeType': 'nsubj', 'attributes': ['NOUN', 'ENTITY'], 'link': 'nsubj', 'spans': [{'start': 12, 'end': 18}], 'children': [{'word': 'my', 'nodeType': 'poss', 'attributes': ['DET'], 'link': 'poss', 'spans': [{'start': 9, 'end': 11}]}]}, {'word': '?', 'nodeType': 'punct', 'attributes': ['PUNCT'], 'link': 'punct', 'spans': [{'start': 18, 'end': 19}]}]}"}
+      console.log(tj, tree)
       hierplane.renderTree(JSON.parse(JSON.stringify(tree)));
     </script>
   </body>
