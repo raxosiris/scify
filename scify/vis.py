@@ -6,12 +6,16 @@ import spacy
 from typing import Dict, Any
 import json
 
-def hierplane(sent):
-    temp = "temp.html"
+def hierplane(sent, temp="./temp.html"):
+    """"""
+
+    nbs_path = "../" + temp
     tree = dict(build_hierplane_tree(sent))
     tree_json = json.dumps(tree, sort_keys=True)
     html = """
-    <div>
+    <!DOCTYPE html><html>
+  <head>
+    <title>Hierplane!</title>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/hierplane@0.2.1/dist/static/hierplane.min.css">
     <script src="https://unpkg.com/hierplane@0.2.1/dist/static/hierplane.min.js"></script>
     </head>
@@ -21,7 +25,7 @@ def hierplane(sent):
       hierplane.renderTree(JSON.parse(JSON.stringify({tree_json})));
     </script>
   </body>
-</div>""".format(tree_json=tree_json) 
+</html>""".format(tree_json=tree_json) 
 
     with open(temp, "w") as h:
         h.write(html)
@@ -30,7 +34,10 @@ def hierplane(sent):
       #  f.write(json.dumps(tree,sort_keys=True))
     #print("Connecting to localhost for vis_server (you have to run one first)....because jupyter and HTML is buggy")
     #return HTML(html)
-    return IFrame(src=temp, width='100%', height='500px')
+
+
+    #PATH IS ABSOLUTE FROM HERe, but relative from /nbs .....
+    return IFrame(src=nbs_path, width='100%', height='500px')
 
 def build_hierplane_tree(tree: spacy.tokens.Span) -> Dict[str, Any]:
     """
