@@ -22,6 +22,14 @@ from typeguard import typechecked
 
 #tip: Use Code Folding
 
+def load_sci_pipe(model="en_core_sci_md"):
+    nlp = spacy.load(model)
+    abbreviation_pipe = AbbreviationDetector(nlp)
+    
+    nlp.add_pipe(abbreviation_pipe)
+    nlp.add_pipe(merge_entities)
+    return nlp
+
 #this might make trouble since it's a list of spans without the .DOC API methods?
 def reannotate(doc:Doc):
     """Takes deserialized doc.user_data with the doc's custom_attributes data and 
@@ -49,6 +57,18 @@ def last_token_of_entity(doc:Doc, token:Token)->Token:
         return token
     else:
         return last_token_of_entity(doc, next_token)
+
+
+def negated_ents(doc:Doc)->List[Span]:
+    """Returns List of all Entities that have a True flag under ._.negex"""
+    return [ent for ent in doc.ents if ent._.negex]
+
+def show_negex_entities(docs: List[Doc])-> List[Dict]:
+    """Shows the negated entities of that sentence (estimated by patterns inside negSpacy). Filters out sentences with no negations"""
+    ent_pat = {}
+    for doc in docs:
+        ent_pat[doc.text] = negated_ents(doc)
+    return [{k: ent_pat[k]} for k in ent_pat if len(ent_pat[k])]
 
 def get_token_and_entities_as_spans(doc:Doc)-> List[Span]:
     """
