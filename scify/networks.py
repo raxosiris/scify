@@ -3,7 +3,7 @@ from functools import reduce
 from typing import List, Tuple, Union
 from spacy.tokens import Token, Doc, Span
 import networkx as nx
-from NLTK import Tree
+from nltk import Tree
 
 def graph_vis_doc(doc, vis=True)-> nx.Graph:
     G = nx.Graph(get_edges(doc))

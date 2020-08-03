@@ -5,11 +5,12 @@ from spacy.tokens import Doc, Span, Token
 import spacy
 from typing import Dict, Any
 import json
+import os
 
-def hierplane(sent, temp="temp.html"):
+def hierplane(sent, temp_file="temp.html"):
     """"""
-
-    nbs_path = "../" + temp
+    print("heelo")
+    #nbs_path = "../nbs/" + temp_file
     tree = dict(build_hierplane_tree(sent))
     tree_json = json.dumps(tree, sort_keys=True)
     html = """
@@ -28,17 +29,17 @@ def hierplane(sent, temp="temp.html"):
 </html>""".format(tree_json=tree_json) 
 
     #because working with files is hard and Iframe only takes paths
-    with open(temp, "w") as h:
+    with open(temp_file, "w") as h:
         h.write(html)
     #at the server
-    #with open("../temp_vis.json", "w+") as f:
+    #with open("../temp_file_vis.json", "w+") as f:
       #  f.write(json.dumps(tree,sort_keys=True))
     #print("Connecting to localhost for vis_server (you have to run one first)....because jupyter and HTML is buggy")
     #return HTML(html)
 
 
-    #PATH IS ABSOLUTE FROM HERe, but relative from /nbs .....
-    return IFrame(src=nbs_path, width='100%', height='500px')
+    #print(os.path.abspath(os.getcwd()), "path")
+    return IFrame(src=temp_file, width='100%', height='500px')
 
 def build_hierplane_tree(tree: spacy.tokens.Span) -> Dict[str, Any]:
     """
