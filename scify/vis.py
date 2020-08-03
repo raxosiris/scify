@@ -6,7 +6,7 @@ import spacy
 from typing import Dict, Any
 import json
 
-def hierplane(sent, temp="./temp.html"):
+def hierplane(sent, temp="temp.html"):
     """"""
 
     nbs_path = "../" + temp
@@ -27,6 +27,7 @@ def hierplane(sent, temp="./temp.html"):
   </body>
 </html>""".format(tree_json=tree_json) 
 
+    #because working with files is hard and Iframe only takes paths
     with open(temp, "w") as h:
         h.write(html)
     #at the server
