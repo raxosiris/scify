@@ -1,9 +1,15 @@
 import os
 import asyncio
 from typing import Dict, List, Union
+import csv
+import json
+from more_itertools import partition
+from typing import List, Dir, Union
 
-DATA_PATH = "../data/biomedrel/"
 
+GNBR_PATH = "../data/biomedrel/"
+CAUSE_BINARY_PATH = "../data/cause_binary.csv"
+WIKIMED_PATH = "../data/wikimed.json"
 PTB_BRACKETS = {
     
     "-LRB-": "(",
@@ -14,23 +20,46 @@ PTB_BRACKETS = {
     "-RSB-": "]",
 }
 
+
+class CauseBinary():
+    @staticmethod
+    def get(path=CAUSE_BINARY_PATH):
+        with open(path, newline='') as csvfile:
+            DS = csv.DictReader(csvfile)
+            return [* DS]
+
+    @staticmethod
+    def split_causal(cause_ds)-> [List, List]:
+        """Splits Dataset into the two categories: Causality in sentence, or NOT"""
+        causal_sents, non_causal_sents = partition(lambda d: int(d["Annotated_Causal"]) == 0, cause_ds)
+        return [* causal_sents], [* non_causal_sents]
+    
+
+class WikiMed():
+    @staticmethod
+    def get(path=WIKIMED_PATH):
+        with open("../data/wikimed.json") as f:
+            wm=[json.loads(d) for d in [* f]]
+            return wm
+
+
 class GNBR():
     @staticmethod
-    def get_data_and_distributions(DIR_PATH=DATA_PATH):
+    def get_data_and_distributions(DIR_PATH=GNBR_PATH):
         with open(DIR_PATH + "part-i-chemical-gene-path-theme-distributions.txt", "r") as f:
             l = f.readlines() #bad and inefficient....
             headers = l[1].strip().split("\t")[1:]
             #headers = next(f).strip().split("\t")[1:] --this did return [] most of the time
             print(headers, 'headers', """
-            chemical-gene
-    (A+) agonism, activation
-    (A-) antagonism, blocking
-    (B) binding, ligand (esp. receptors)
-    (E+) increases expression/production
-    (E-) decreases expression/production
-    (E) affects expression/production (neutral)
-    (N) inhibits
-            """)
+                            chemical-gene
+                    (A+) agonism, activation
+                    (A-) antagonism, blocking
+                    (B) binding, ligand (esp. receptors)
+                    (E+) increases expression/production
+                    (E-) decreases expression/production
+                    (E) affects expression/production (neutral)
+                    (N) inhibits
+                            """)
             distributions = {}
             #incredibly dumb way of doing this because the fileread IO is buggy or just bad
             for line in l[2:]:
@@ -46,6 +75,13 @@ class GNBR():
                 lines = [{k:v for k,v in zip(data_headers, line.strip().split("\t"))} for line in data]
             
         return lines, distributions
+
+
+    @staticmethod
+    def supports_what(dep_path: str)->Dict:
+       """Maps and filters the GNBR support theme dict for fast feedback without you having to lookup the paper all the time"""
+        return "TODO"
+    
     @staticmethod
     def clean_and_parse(sent: str, nlp, PTB_BRACKETS=PTB_BRACKETS):
         """ -LRB- something -RRB- ===> (something) """
@@ -110,6 +146,11 @@ class GNBR():
                     Rg 	Regulation 	 	                                28, 30 
                     Q 	Production by cell population 	 	            1, 2, 6
                 """
+    @staticmethod
+    def GNBR_valid_patterns()->List[str]:
+        """the construct pattern method returns null if not valid (if dep path is not a DAG?)"""
+        return "TODO"
+    
 
     @staticmethod
     def parse_dep_path(dep_string: str):
