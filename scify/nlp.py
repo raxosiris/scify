@@ -4,7 +4,7 @@ import spacy
 from spacy import displacy
 from scispacy.abbreviation import AbbreviationDetector
 from spacy.pipeline import merge_entities
-from typing import List
+from typing import List, Dict, Union
 from scispacy.linking import EntityLinker
 from io import BytesIO
 

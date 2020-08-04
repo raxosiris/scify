@@ -61,8 +61,10 @@ class V:
         displacy.render(doc, style="ent", options={"distance": 120}, jupyter=True)
     
     @staticmethod
-    def visualise_subtrees(doc, subtrees: List[int]):
-
+    def visualise_subtrees(doc:Doc, subtrees: List[int]):
+        """Only visualize the dependencies in the subtrees
+        Adapted from code of Mark Neumann
+        """
         words = [{"text": t.text, "tag": t.pos_} for t in doc]
 
         if not isinstance(subtrees[0], list):
