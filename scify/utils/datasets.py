@@ -5,7 +5,8 @@ import csv
 import json
 from more_itertools import partition
 from typing import List, Union
-
+from collections import Counter
+from scify.nlp import construct_pattern
 
 GNBR_PATH = "../data/biomedrel/"
 CAUSE_BINARY_PATH = "../data/cause_binary.csv"
@@ -75,6 +76,9 @@ class GNBR():
                 lines = [{k:v for k,v in zip(data_headers, line.strip().split("\t"))} for line in data]
             
         return lines, distributions
+    @staticmethod
+    def fixup():
+        """GNBR paper (Stanford Dependencies?) isn't fully mapped on UD that spacy uses"""
 
 
     @staticmethod
@@ -148,10 +152,46 @@ class GNBR():
                     Q 	Production by cell population 	 	            1, 2, 6
                 """
     @staticmethod
-    def GNBR_valid_patterns()->List[str]:
+    def valid_patterns(dist)->List[str]:
         """the construct pattern method returns null if not valid (if dep path is not a DAG?)"""
-        return "TODO"
+        valid_count = 0
+        valids = {}
+        for dep, values in dist.items():
+            if construct_pattern(dep) is None:
+                continue
+
+            valids[dep] = values
+            valid_count += 1
+        
+        all = len(dist.items())
+        print('{} of {} patterns (DSP) are valid. That is {} %'.format(valid_count, all, valid_count/all))
+
+        return valids
     
+    def peak_ratio(coll: List[Union[int, float]])->float:
+        """Distribution measure: 1 if there's one value, less if there is many"""
+        return max(coll) / ( sum(coll) + 0.000001)
+
+    def strongest_support(dist):
+        counter = Counter()
+        for dep, values in distributions.items():
+            counter[dep] = sum(list(values.values()))
+        return counter
+
+    def path_lengths(dist):
+        path_lengths = Counter()
+        for dep, values in distributions.items():
+            length = len(dep.split(" "))
+            path_lengths[length] += 1
+        return path_lengths
+
+    def path_count(data)->Counter:
+        """Counts how often a path appears in the data file"""
+        print("Counting " + str(len(data)) + " dependency paths")
+        path_count = Counter()
+        for d in data:
+            path_count[d["dep"].lower()] += 1
+        return path_count
 
     @staticmethod
     def parse_dep_path(dep_string: str):
