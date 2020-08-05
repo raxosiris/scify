@@ -6,12 +6,15 @@ from typing import Dict, Any, Union, List
 import json
 import os
 from spacy import displacy
+import deplacy
+from graphviz import Source
+
+#TODO! Better way to display graphvis dotfiles without having to save them
 
 class V:
     """
     Static Methods for Visualizing Docs, Spans and Sentences
     """
-
     def __init__(self) -> None:
         return
     
@@ -21,8 +24,20 @@ class V:
         return display(Image(png))
 
     @staticmethod
-    def hierplane(sent, temp_file="temp.html"):
-        """Interactive visualization of the Sentence dependency hierarchy. Hierplane is a AllenAI Component"""
+    def catena(doc):
+        """
+        Catena is a unit of syntax and morphology, closely associated with dependency grammars. 
+        It is a more flexible and inclusive unit than the constituent and may therefore be 
+        better suited than the constituent to serve as the fundamental unit of syntactic and morphosyntactic analysis
+        https://en.wikipedia.org/wiki/Catena_(linguistics)
+        """
+        temp = deplacy.dot(doc)
+        s = Source(temp, filename="test.gv", format="png")
+        return display(Image("test.gv.png"))
+        
+    @staticmethod
+    def hierplane(sent:Span, temp_file="temp.html"):
+        """Interactive visualization of the SENTENCE dependency hierarchy. Hierplane is a AllenAI Component"""
         print("heelo")
         #nbs_path = "../nbs/" + temp_file
         tree = dict(build_hierplane_tree(sent))

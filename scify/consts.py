@@ -1,3 +1,12 @@
+from operator import eq, ge, le
+
+PARAMS = {
+    
+    "LEN_TRESH": 15,
+    "SUBTREE_LEN_TRESH": 6,
+    
+}
+
 labels = {
 'AMINO_ACID',
  'ANATOMICAL_SYSTEM',

@@ -4,7 +4,7 @@ from typing import Dict, List, Union
 import csv
 import json
 from more_itertools import partition
-from typing import List, Dir, Union
+from typing import List, Union
 
 
 GNBR_PATH = "../data/biomedrel/"
@@ -79,9 +79,10 @@ class GNBR():
 
     @staticmethod
     def supports_what(dep_path: str)->Dict:
-       """Maps and filters the GNBR support theme dict for fast feedback without you having to lookup the paper all the time"""
-        return "TODO"
-    
+       """Maps and filters the GNBR support theme dict for fast 
+       feedback without you having to lookup the paper all the time"""
+       return 5
+        
     @staticmethod
     def clean_and_parse(sent: str, nlp, PTB_BRACKETS=PTB_BRACKETS):
         """ -LRB- something -RRB- ===> (something) """

@@ -1,0 +1,11 @@
+digraph deplacy{
+node[shape=plaintext,fontsize=14];
+edge[color=gray,fontname="sans-serif",fontsize=10];
+r2[fontname="sans-serif",fontsize=10,fixedsize=true,height=.15,label="ROOT"];r2->x5;
+x5[label="Alzheimer's Disease causes Dementia in the older population"];x5->w:1[label="nsubj"];x5->x4;
+x4[label="causes Dementia in the older population"];x4->x3;x4->x2[label="prep"];
+x3[label="causes Dementia"];x3->w:2;x3->w:3[label="dobj"];
+x2[label="in the older population"];x2->w:4;x2->x1[label="pobj"];
+x1[label="the older population"];x1->w:5[label="det"];x1->w:6;
+w[shape=record,penwidth=0,label="{<1>Alzheimer's Disease|PROPN}|{<2>causes|VERB}|{<3>Dementia|NOUN}|{<4>in|ADP}|{<5>the|DET}|{<6>older population|NOUN}"];
+}
