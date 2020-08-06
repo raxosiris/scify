@@ -7,7 +7,11 @@ PARAMS = {
     
 }
 
-labels = {
+SPACY_DEPS = {'ROOT', 'acl', 'acl:relcl','advcl','advmod','amod','appos','aux','auxpass','case','cc','cc:preconj','ccomp',
+              'compound','compound:prt','conj','cop','csubj','csubjpass','dep','det','det:predet','dobj','expl','iobj','list',
+              'mark','mwe','neg','nmod','nmod:npmod','nmod:poss','nmod:tmod','nsubj','nsubjpass','nummod','parataxis','punct','xcomp'}
+
+labels = { #[get_label_candidates_from_entity(ent) for ent in corp[8].ents if len(ent._.annotated)]
 'AMINO_ACID',
  'ANATOMICAL_SYSTEM',
  'CANCER',

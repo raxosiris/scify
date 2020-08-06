@@ -335,8 +335,12 @@ def add_matches(vocab, patterns: List[str], lemmas=True, start_ents=None, end_en
     for p in patterns:
         pattern = construct_pattern(p, lemmatize=lemmas, start_ents=start_ents, end_ents=end_ents)
         if print_patterns:
-            print(pattern, p)   
-        matcher.add(p, None, pattern)
+            print(pattern, p)  
+        try:  #object of type 'NoneType' has no len() weirdly on some of the 20k dep paths
+            matcher.add(p, None, pattern)
+        except:
+            print("error with pattern", p, "-->", pattern)
+            continue
     return matcher
 
 nlp_x = spacy.load("en_core_web_sm") 
