@@ -10,7 +10,7 @@ import deplacy
 from graphviz import Source
 
 #TODO! Better way to display graphvis dotfiles without having to save them
-
+#TODO! Whatlies, scattertext and Sentence Transformers visualizations!
 class V:
     """
     Static Methods for Visualizing Docs, Spans and Sentences
