@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from tabulate import tabulate
 import spacy
 from spacy import displacy
 from scispacy.abbreviation import AbbreviationDetector
@@ -11,7 +10,7 @@ from io import BytesIO
 from collections import defaultdict
 from spacy.matcher import DependencyMatcher
 from spacy.lemmatizer import Lemmatizer, ADJ, NOUN, VERB
-import visualise_spacy_pattern
+#import visualise_spacy_pattern
 import json
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -22,11 +21,15 @@ from typeguard import typechecked
 
 #tip: Use Code Folding
 
-def get_label_candidates_from_entity(ent: Span)->List:
+def ents_w_candidates(doc): return [(ent, candidates_lables(ent)) for ent in doc.ents]
+
+@typechecked
+def candidates_lables(ent: Span)->List:
     """aggregates labels from possibly multiple NER models (bc5, bionlpa...)"""
     return [cand["label"] for cand in ent._.annotated]
 
-def get_ent_from_token(token, doc):
+@typechecked
+def get_ent_from_token(token:Token, doc:Doc)->List[Span]:
     """Entities can have multiple tokens"""
     return [ent for ent in doc.ents if ent.start_char <= token.idx <= ent.end_char]
 
@@ -327,7 +330,7 @@ def add_matches(vocab, patterns: List[str], lemmas=True, print_patterns=False):
     into a pattern that DependencyMatcher class can use"""
     matcher = DependencyMatcher(vocab)
     for p in patterns:
-        pattern = construct_pattern(prep_pattern(p), lemmatize=lemmas)
+        pattern = construct_pattern(p, lemmatize=lemmas)
         if print_patterns:
             print(pattern, p)   
         matcher.add(p, None, pattern)
@@ -338,20 +341,7 @@ def get_lemma(verb, V=True, nlp= nlp_x):
     lemmatizer = nlp.vocab.morphology.lemmatizer #lemmatizer("is") -> "be"
     return lemmatizer(verb, VERB)[0]
 
-def show_tree(doc):
-    tree = {}
-    for token in [*doc]:
-        tree[token.text] = [*token.children]
-    return tree
 
-def show_tabs(doc):
-  """Show a flat table of the parsed spaCy document"""
-  print(tabulate([
-    [token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
-    token.shape_, token.is_alpha, token.is_stop] 
-    for token in doc], headers=["token", "lemma", "POS", "Tag", "DEP", "shape", "is_alpha", "is_stop"]
-  ))
-  return 'Printed Table above'
 
 def check_for_non_trees(rules: List[List[str]]):
 

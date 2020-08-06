@@ -21,14 +21,16 @@ PTB_BRACKETS = {
     "-RSB-": "]",
 }
 
+def get_csv(path):
+    with open(path, newline='') as csvfile:
+        DS = csv.DictReader(csvfile)
+        return [* DS]
+
 
 class CauseBinary():
     @staticmethod
-    def get(path=CAUSE_BINARY_PATH):
-        with open(path, newline='') as csvfile:
-            DS = csv.DictReader(csvfile)
-            return [* DS]
-
+    def get(path=CAUSE_BINARY_PATH): get_csv(path)
+      
     @staticmethod
     def split_causal(cause_ds)-> [List, List]:
         """Splits Dataset into the two categories: Causality in sentence, or NOT"""
@@ -174,13 +176,13 @@ class GNBR():
 
     def strongest_support(dist):
         counter = Counter()
-        for dep, values in distributions.items():
+        for dep, values in dist.items():
             counter[dep] = sum(list(values.values()))
         return counter
 
     def path_lengths(dist):
         path_lengths = Counter()
-        for dep, values in distributions.items():
+        for dep, values in dist.items():
             length = len(dep.split(" "))
             path_lengths[length] += 1
         return path_lengths

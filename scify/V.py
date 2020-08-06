@@ -5,6 +5,9 @@ import spacy
 from typing import Dict, Any, Union, List
 import json
 import os
+from typeguard import typechecked
+from tabulate import tabulate
+
 from spacy import displacy
 import deplacy
 from graphviz import Source
@@ -79,7 +82,7 @@ class V:
         displacy.render(doc, style="ent", options={"distance": 120}, jupyter=True)
     
     @staticmethod
-    def show_tree(doc):
+    def print_tree(doc):
         """Show Tokens with their children as printout"""
         tree = {}
         for token in [*doc]:
@@ -87,7 +90,7 @@ class V:
         return tree
 
     @staticmethod
-    def show_tabs(doc):
+    def table(doc):
         """Show a flat table of the parsed spaCy document"""
         print(tabulate([
             [token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
