@@ -22,7 +22,12 @@ from typeguard import typechecked
 
 #tip: Use Code Folding
 
+def get_label_candidates_from_entity(ent: Span)->List:
+    """aggregates labels from possibly multiple NER models (bc5, bionlpa...)"""
+    return [cand["label"] for cand in ent._.annotated]
+
 def get_ent_from_token(token, doc):
+    """Entities can have multiple tokens"""
     return [ent for ent in doc.ents if ent.start_char <= token.idx <= ent.end_char]
 
 def load_sci_pipe(model="en_core_sci_md"):
@@ -332,56 +337,6 @@ nlp_x = spacy.load("en_core_web_sm")
 def get_lemma(verb, V=True, nlp= nlp_x):
     lemmatizer = nlp.vocab.morphology.lemmatizer #lemmatizer("is") -> "be"
     return lemmatizer(verb, VERB)[0]
-
-def visualise_doc(doc:Doc, compact=False):
-    displacy.render(doc, style="dep", options={"distance": 120, "compact":compact}, jupyter=True)
-    displacy.render(doc, style="ent", options={"distance": 120}, jupyter=True)
-
-def visualise_subtrees(doc, subtrees: List[int]):
-
-    words = [{"text": t.text, "tag": t.pos_} for t in doc]
-
-    if not isinstance(subtrees[0], list):
-        subtrees = [subtrees]
-
-    for subtree in subtrees:
-        arcs = []
-
-        tree_indices = set(subtree)
-        for index in subtree:
-
-            token = doc[index]
-            head = token.head
-            if token.head.i == token.i or token.head.i not in tree_indices:
-                continue
-
-            else:
-                if token.i < head.i:
-                    arcs.append(
-                        {
-                            "start": token.i,
-                            "end": head.i,
-                            "label": token.dep_,
-                            "dir": "left",
-                        }
-                    )
-                else:
-                    arcs.append(
-                        {
-                            "start": head.i,
-                            "end": token.i,
-                            "label": token.dep_,
-                            "dir": "right",
-                        }
-                    )
-        print("Subtree: ", subtree)
-        displacy.render(
-            {"words": words, "arcs": arcs},
-            style="dep",
-            options={"distance": 120},
-            manual=True,
-            jupyter=True
-        )
 
 def show_tree(doc):
     tree = {}

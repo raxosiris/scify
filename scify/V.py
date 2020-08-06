@@ -11,6 +11,8 @@ from graphviz import Source
 
 #TODO! Better way to display graphvis dotfiles without having to save them
 #TODO! Whatlies, scattertext and Sentence Transformers visualizations!
+#TODO! Pattern and Word Trees (-> P ->)
+#TODO! Semantic Shifts / Integrate with 
 class V:
     """
     Static Methods for Visualizing Docs, Spans and Sentences
@@ -71,12 +73,31 @@ class V:
         return IFrame(src=temp_file, width='100%', height='500px')
     
     @staticmethod
-    def visualise_doc(doc:Doc, compact=False):
+    def doc(doc:Doc, compact=False):
+        """Improvement of displacy visualizer (dep + ent). Just try it"""
         displacy.render(doc, style="dep", options={"distance": 120, "compact":compact}, jupyter=True)
         displacy.render(doc, style="ent", options={"distance": 120}, jupyter=True)
     
     @staticmethod
-    def visualise_subtrees(doc:Doc, subtrees: List[int]):
+    def show_tree(doc):
+        """Show Tokens with their children as printout"""
+        tree = {}
+        for token in [*doc]:
+            tree[token.text] = [*token.children]
+        return tree
+
+    @staticmethod
+    def show_tabs(doc):
+        """Show a flat table of the parsed spaCy document"""
+        print(tabulate([
+            [token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
+            token.shape_, token.is_alpha, token.is_stop] 
+            for token in doc], headers=["token", "lemma", "POS", "Tag", "DEP", "shape", "is_alpha", "is_stop"]
+        ))
+        return 'Printed Table above'
+
+    @staticmethod
+    def subtrees(doc:Doc, subtrees: List[int]):
         """Only visualize the dependencies in the subtrees
         Adapted from code of Mark Neumann
         """
