@@ -42,7 +42,7 @@ def load_sci_pipe(model="en_core_sci_md"):
     return nlp
 
 #this might make trouble since it's a list of spans without the .DOC API methods?
-def reannotate(doc:Doc):
+def reannotate():
     """Takes deserialized doc.user_data with the doc's custom_attributes data and 
     sets the ._.annotated attribute again on the entity so it's easier to process later"""
     #strangely two entries with different spans for some entities in 
@@ -50,13 +50,15 @@ def reannotate(doc:Doc):
     try:
         Span.set_extension('annotated', default=[], force=True)
     except:
-        for k,v in doc.user_data.items():
-            for ent in doc.ents:
-                #print(k, v, k[2])
-                if ent.start_char == k[2]:
-                    #print(type(v), v)
-                    #converting to list to be consistent with merge_docs and other notebooks ._.annotated
-                    ent._.annotated = list(v)# if type(v) == tuple else []
+        5
+    # except:
+    #     for k,v in doc.user_data.items():
+    #         for ent in doc.ents:
+    #             #print(k, v, k[2])
+    #             if ent.start_char == k[2]:
+    #                 #print(type(v), v)
+    #                 #converting to list to be consistent with merge_docs and other notebooks ._.annotated
+    #                 ent._.annotated = list(v)# if type(v) == tuple else []
 
 
 def last_token_of_entity(doc:Doc, token:Token)->Token:
@@ -325,12 +327,13 @@ def pattern_vis(pattern: List[dict]):
 def prep_pattern(pattern:str) -> List[List[str]]: 
         return [rule.split("|") for rule in pattern.split(" ")]
         
-def add_matches(vocab, patterns: List[str], lemmas=True, print_patterns=False):
+def add_matches(vocab, patterns: List[str], lemmas=True, start_ents=None, end_ents=None, print_patterns=False):
+    #BAAAAD PATTERN! PASSING DOWN VARS (DECORATOR?)
     """Converts "prevented|nsubj|START_ENTITY prevented|dobj|END_ENTITY" 
     into a pattern that DependencyMatcher class can use"""
     matcher = DependencyMatcher(vocab)
     for p in patterns:
-        pattern = construct_pattern(p, lemmatize=lemmas)
+        pattern = construct_pattern(p, lemmatize=lemmas, start_ents=start_ents, end_ents=end_ents)
         if print_patterns:
             print(pattern, p)   
         matcher.add(p, None, pattern)
@@ -383,7 +386,7 @@ def check_for_non_trees(rules: List[List[str]]):
 
     return root, parent_to_children
 
-def construct_pattern(rules: List[List[str]], lemmatize=True):
+def construct_pattern(rules: List[List[str]], lemmatize=True, start_ents=None, end_ents=None, log_info=[]):
     """
     Idea: add patterns to a matcher designed to find a subtree in a spacy dependency tree.
     Rules are strictly of the form "CHILD --rel--> PARENT". To build this up, we add rules
@@ -433,9 +436,15 @@ def construct_pattern(rules: List[List[str]], lemmatize=True):
             # the word is part of an entity (spacy syntax is funny for this)
             # and that the word is a noun, as there are some verbs annotated as "entities" in medmentions.
             
-            if child in {"START_ENTITY", "END_ENTITY"}:
+            if str.lower(child) in {"start_entity", "end_entity"}:
                 #!UNCOMMENT BELOW IFF ONLY TOKENS that also have ENTITIES can be in the match-subtree!!
-                #token_pattern["ENT_TYPE"] = {"NOT_IN": [""]}
+                token_pattern["ENT_TYPE"] = {"NOT_IN": [""]}
+
+                if start_ents and end_ents:
+                    6
+                    #TODO! THIS DOESN"T WORK YET, bc ENT_TYPE looks on label, not ._. our custom attrs
+                    #token_pattern["ENT_TYPE"] = {"NOT_IN": start_ents + end_ents}
+                
                 token_pattern["POS"] = "NOUN"
                 
             # If we are on part of the path which is not the start/end entity,
@@ -458,12 +467,12 @@ def construct_pattern(rules: List[List[str]], lemmatize=True):
     assert len(pattern) < 20
     return pattern
 
-def match_texts(matcher:DependencyMatcher, texts:List[str],nlp) -> dict:
+#@typechecked
+def match_texts(matcher:DependencyMatcher, docs:List[Union[Doc, str]],nlp) -> dict:
     output = {}
-    docs = []
-    for text in texts:
-        doc = nlp(text)
-        docs.append(doc)
+    if type(docs[0]) == str:
+        docs = [nlp(text) for text in docs]
+    for doc in docs:
         matches = matcher(doc)
         #print(matches, 'match')
         for match_id, ms in matches:
