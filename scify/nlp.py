@@ -22,6 +22,9 @@ from typeguard import typechecked
 
 #tip: Use Code Folding
 
+def get_ent_from_token(token, doc):
+    return [ent for ent in doc.ents if ent.start_char <= token.idx <= ent.end_char]
+
 def load_sci_pipe(model="en_core_sci_md"):
     nlp = spacy.load(model)
     abbreviation_pipe = AbbreviationDetector(nlp)
